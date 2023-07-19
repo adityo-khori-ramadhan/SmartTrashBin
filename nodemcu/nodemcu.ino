@@ -8,7 +8,7 @@ unsigned long previousMillis = 0;
 const long interval = 3000;
 
 //variabel array untuk data parsing
-String arrData[5];
+String arrData[8];
 
 //konfigurasi thinger.io
 #define USERNAME "adityokhori"
@@ -18,12 +18,11 @@ String arrData[5];
 ThingerESP8266 thing(USERNAME, DEVICE_ID, DEVICE_CREDENTIAL);
 
 //KONFIGURASI WIFI
-const char* ssid = "3x-5y+7=15";
-const char* password = "hitungdulu";
-int distance3;
+const char* ssid = "MOH. KHOLIMAN";
+const char* password = "mkmaiyako";
+int servoOpenCount,distance3,distance1,distance2,reset;
 float filteredWeight;
-boolean isLedOn1, isLedOn2, isServoRotated;
-//sediakan variabel menampung nilai sensor2, bera,t led1,led2 ke thingerio
+boolean isLedOn1, isLedOn2;
 
 void setup() {
   Serial.begin(9600);
@@ -35,11 +34,14 @@ void setup() {
   //data yang akan dikirim
   thing["Dataku"] >> [](pson & out)
   {
-    out["distance3"] = distance3;
+    out["Total tong sampah terbuka"] = servoOpenCount;
+    out["distance1"] = distance1;
+    out["distance2"] = distance2;
+    out["Kedalaman"] = distance3;
     out["Berat"] = filteredWeight;
-    out["Lampu1"] = isLedOn1;
-    out["Lampu2"] = isLedOn2;
-    out["Servo"] = isServoRotated;
+    out["Ketinggian maksimal"] = isLedOn1;
+    out["Berat sampah maksimal"] = isLedOn2;
+    out["Total Reset/Pembersihan sampah"] = reset;
   };
 
 }
@@ -80,7 +82,7 @@ if(currentMillis - previousMillis >= interval)
 
     //pastikan bahwa data yang dikirim lengkap
     //urutannya 0,1,2,3
-    if(index == 4)
+    if(index == 8)
     {
       //tampilkan nilai sensor ke serial monitor
       Serial.println(arrData[0]);
@@ -88,19 +90,30 @@ if(currentMillis - previousMillis >= interval)
       Serial.println(arrData[2]);
       Serial.println(arrData[3]);
       Serial.println(arrData[4]);
+      Serial.println(arrData[5]);
+      Serial.println(arrData[6]);
+      Serial.println(arrData[7]);
       Serial.println();
     }
-distance3 = arrData[0].toInt();
-filteredWeight = arrData[1].toFloat();
-isLedOn1 = arrData[2].toInt();
-isLedOn2 = arrData[3].toInt();
-isServoRotated = arrData[4].toInt();
+
+servoOpenCount = arrData[0].toInt();
+distance1 = arrData[1].toInt();
+distance2 = arrData[2].toInt();
+distance3 = arrData[3].toInt();
+filteredWeight = arrData[4].toFloat();
+isLedOn1 = arrData[5].toInt();
+isLedOn2 = arrData[6].toInt();
+reset = arrData[7].toInt();
+
 
     arrData[0] = "";
     arrData[1] = "";
     arrData[2] = "";
     arrData[3] = "";
     arrData[4] = "";
+    arrData[5] = "";
+    arrData[6] = "";
+    arrData[7] = "";
   }
   //minta data ke arduino
   DataSerial.println("Ya");
